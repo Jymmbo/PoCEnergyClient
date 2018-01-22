@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+	<script src="./node_modules/web3/dist/web3.min.js"></script>
+	<script src="abi.js"></script>
+
+</head>
+<body onload="loadOperation()">
+    <div class="container">
+
+        <h1>PoC Energia</h1>
+        
+        <div id="operations">
+			<a href="index.html">Volver a la pantalla de ejecución de operaciones</a>
+            <label for="selectOperation" class="col-lg-2 control-label">Obtener</label>
+            <select id="operationsSelect" name="operationsSelect" onchange="loadOperation()">
+				<option value="addUser">Usuarios</option>
+                <option value="produceEnergy">Energía producida</option>
+                <option value="purchaseEnergy">Energía comprada</option>
+				<option value="consumeEnergy">Energía consumida</option>
+				<option value="setPrize">Precio de la energía</option>
+			</select>
+        </div>
+        
+        <div class="operation">
+            <div id="users">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+							<th>Nombre</th>
+							<th>Perfil</th>
+                            <th>Direccion</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableUsers">
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="producedEner">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Fecha</th>
+							<th>Productor</th>
+							<th>Cantidad</th>
+						</tr>
+					</thead>
+					<tbody id="tableProducedEnergy">
+					</tbody>
+				</table>
+            </div>
+
+            <div id="purchasedEner">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Fecha</th>
+							<th>Productor</th>
+							<th>Comercializador</th>
+							<th>Cantidad</th>
+							<th>Precio</th>
+						</tr>
+					</thead>
+					<tbody id="tablePurchasedEnergy">
+					</tbody>
+				</table>
+            </div>
+
+            <div id="consumedEner">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Fecha</th>
+							<th>Comercializador</th>
+							<th>Cliente</th>
+							<th>Concepto</th>
+							<th>Cantidad</th>
+							<th>Precio</th>
+						</tr>
+					</thead>
+					<tbody id="tableConsumedEnergy">
+					</tbody>
+				</table>
+			</div>
+			
+			<div id="setPrize">
+                <h6 id="bchPrize"></h6>
+			</div>
+        </div>
+
+        <div>
+            <button id="button">Ejecutar operación</button>
+        </div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+       if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+        }
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+
+        var PoCEnergyContract = web3.eth.contract(abiArray);
+
+        var PoCEnergy = PoCEnergyContract.at('0xaf085c7782a9de4f13558725b797193f4bf23541');
+        console.log(PoCEnergy);
+		
+		/*
+		** Operaciones para obtener info de la Blockchain
+		*/
+		//Usuarios
+		function getBCHUsers(){
+			console.log("getBCHUsers");
+            PoCEnergy.getUsers(function(error, result){
+                if(!error){
+					console.log("getBCHUsers.PocEnergy.getUsers: OK");
+                    for (i = 0; i < result.length; i++) {
+                        var direccionAccountBck = result[i].toString();
+                        PoCEnergy.getUser(direccionAccountBck, function(error2, result2){
+                            if(!error2){
+								$('#tableUsers').append('<tr><td>' + result2[1].toString() + 
+									'</td><td>' + result2[2].toString() +  
+									'</td><td>' + result2[0].toString() + '</td></tr>');
+                            } else{
+                                console.error("getBCHUsers.PoCEnergy.getUser Error: " + error2);
+                            }
+                        });              
+                    }
+                }else{
+                    console.error("getBCHUsers.PoCEnergy.getUsers Error: " + error2);
+                }
+            });
+        };
+		
+		//Precio
+		function getBCHPrize(){
+            console.log("getBCHPrize");
+            PoCEnergy.getPrize(function(error, result){
+                if(!error){
+					$("#bchPrize").html('Precio: ' + result[0]);
+					console.log("getBCHPrize.PoCEnergy.getPrize result: " + result);
+                }else{
+                    console.error("getBCHPrize.PoCEnergy.getPrize Error: " + error);
+                }
+            });
+		}
+
+		//Energia producida
+		function getBCHProducedEnergy(){
+			console.log("getBCHProducedEnergy");
+            PoCEnergy.getProducedEnergies(function(error, result){
+                if(!error){
+					console.log("getBCHProducedEnergy.PocEnergy.getProducedEnergies: OK");
+                    for (i = 0; i < result.length; i++) {
+                        var productionDate = result[i].toString();
+                        PoCEnergy.getProducedEner(productionDate, function(error2, result2){
+                            if(!error2){
+								$('#tableProducedEnergy').append('<tr><td>' + result2[0].toString() + 
+									'</td><td>' + result2[1].toString() +  
+									'</td><td>' + result2[2].toString() + '</td></tr>');
+                            } else{
+                                console.error("getBCHProducedEnergy.PoCEnergy.getProducedEner Error: " + error2);
+                            }
+                        });              
+                    }
+                }else{
+                    console.error("getBCHProducedEnergy.PoCEnergy.getProducedEnergies Error: " + error2);
+                }
+            });
+		};
+		
+		//Energia comprada
+		function getBCHPurchasedEnergy(){
+			console.log("getBCHPurchasedEnergy");
+            PoCEnergy.getPurchasedEnergies(function(error, result){
+                if(!error){
+					console.log("getBCHPurchasedEnergy.PocEnergy.getPurchasedEnergies: OK");
+                    for (i = 0; i < result.length; i++) {
+                        var productionDate = result[i].toString();
+                        PoCEnergy.getPurchasedEner(productionDate, function(error2, result2){
+                            if(!error2){
+								$('#tableConsumedEnergy').append('<tr><td>' + result2[0].toString() + 
+									'</td><td>' + result2[1].toString() +
+									'</td><td>' + result2[2].toString() +
+									'</td><td>' + result2[5].toString() +
+									'</td><td>' + result2[3].toString() +  
+									'</td><td>' + result2[4].toString() + '</td></tr>');
+                            } else{
+                                console.error("getBCHPurchasedEnergy.PoCEnergy.getPurchasedEner Error: " + error2);
+                            }
+                        });              
+                    }
+                }else{
+                    console.error("getBCHPurchasedEnergy.PoCEnergy.getPurchasedEnergies Error: " + error2);
+                }
+            });
+		};
+		
+		//Energia consumida
+		function getBCHConsumedEnergy(){
+			console.log("getBCHConsumedEnergy");
+            PoCEnergy.getConsumedEnergies(function(error, result){
+                if(!error){
+					console.log("getBCHConsumedEnergy.PocEnergy.getConsumedEnergies: OK");
+                    for (i = 0; i < result.length; i++) {
+                        var productionDate = result[i].toString();
+                        PoCEnergy.getConsumedEner(productionDate, function(error2, result2){
+                            if(!error2){
+								$('#tableProducedEnergy').append('<tr><td>' + result2[0].toString() + 
+									'</td><td>' + result2[1].toString() +  
+									'</td><td>' + result2[2].toString() + '</td></tr>');
+                            } else{
+                                console.error("getBCHConsumedEnergy.PoCEnergy.getConsumedEner Error: " + error2);
+                            }
+                        });              
+                    }
+                }else{
+                    console.error("getBCHConsumedEnergy.PoCEnergy.getConsumedEnergies Error: " + error2);
+                }
+            });
+        };
+
+		//Definimos todas las funciones
+        $("#button").click(function() {
+			myselect = document.getElementById("operationsSelect");
+            operation = myselect.options[myselect.selectedIndex].value;
+            if (operation=="setPrize"){
+                getBCHPrize();
+            }else if (operation=="produceEnergy"){
+                getBCHProducedEnergy();
+            }else if (operation=="purchaseEnergy"){
+                getBCHPurchasedEnergy();
+            }else if (operation=="consumeEnergy"){
+                getBCHConsumedEnergy();
+            }
+        });
+
+
+	</script>
+	
+	<script src="main.js"></script>
+</body>
+</html>

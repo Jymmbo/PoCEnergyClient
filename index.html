@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <script src="abi.js"></script>
+</head>
+<body onload="loadOperation()">
+    <div class="container">
+
+        <h1>PoC Energia</h1>
+        
+        <div id="operations">
+			<a href="data.html">Consultar información de la Blockchain</a>
+            <label for="selectOperation" class="col-lg-2 control-label">Operacion a ejecutar</label>
+            <select id="operationsSelect" name="operationsSelect" onchange="loadOperation()">
+				<!--
+					<option value="addUser">Anadir usuario</option>
+				-->
+                <option value="produceEnergy">Producir energia</option>
+                <option value="purchaseEnergy">Comprar energia</option>
+				<option value="consumeEnergy">Consumir energia</option>
+				<option value="setPrize">Establecer precio</option>
+			</select>
+        </div>
+        
+        <div class="operation">
+            <div id="users">
+                <label for="userAddress" class="col-lg-2 control-label">Introducir cuenta</label>
+                <input id="userAddress" type="text">
+
+                <label for="userName" class="col-lg-2 control-label">Nombre del usuario</label>
+                <input id="userName" type="text">
+
+                <label for="userProfile" class="col-lg-2 control-label">Perfil del usuario</label>
+                <select id="userProfiles" name="userProfiles">
+                    <option selected value="producer">Productor</option>
+                    <option value="marketer">Comercializador</option>
+                    <option value="client">Cliente</option>
+                </select>
+            </div>
+
+            <div id="producedEner">
+                    <label for="producedEnerQuantity" class="col-lg-2 control-label">Cantidad de energía producica</label>
+                    <input id="producedEnerQuantity" type="text">
+
+                    <label for="producedEnerDate" class="col-lg-2 control-label">Fecha</label>
+                    <input id="producedEnerDate" type="date">
+            </div>
+
+            <div id="purchasedEner">
+                    <label for="purchasedEnerQuantity" class="col-lg-2 control-label">Cantidad de energía comprada</label>
+                    <input id="purchasedEnerQuantity" type="text">
+
+                    <!--
+                        <label for="purchasedValue" class="col-lg-2 control-label">Precio de compra</label>
+                        <input id="purchasedValue" type="text">
+                    -->
+        
+                    <label for="productorAccount" class="col-lg-2 control-label">Dirección del productor</label>
+                    <input id="productorAccount" type="text">   
+                    
+                    <label for="purchasedEnerDate" class="col-lg-2 control-label">Fecha</label>
+                    <input id="purchasedEnerDate" type="date">
+            </div>
+
+            <div id="consumedEner">
+                    <label for="consumedEnerQuantity" class="col-lg-2 control-label">Cantidad de energía consumida</label>
+                    <input id="consumedEnerQuantity" type="text">
+
+                    <label for="consumedConcept" class="col-lg-2 control-label">Concepto (razón del consumo)</label>
+                    <input id="consumedConcept" type="text">
+
+                    <!--
+                        <label for="consumedValue" class="col-lg-2 control-label">Precio de la energía consumida</label>
+                        <input id="consumedValue" type="text">
+                    -->
+        
+                    <label for="distributorAccount" class="col-lg-2 control-label">Dirección del distribuidor</label>
+                    <input id="distributorAccount" type="text">
+
+                    <label for="consumedEnerDate" class="col-lg-2 control-label">Fecha</label>
+                    <input id="consumedEnerDate" type="datetime">
+                    <!--
+                        input id="consumedEnerDate" type="datetime-local">
+                    -->
+			</div>
+			
+			<div id="setPrize">
+				<label for="prize" class="col-lg-2 control-label">Precio de la energía</label>
+				<input id="prize" type="text">
+		</div>
+        </div>
+
+        <div>
+            <button id="button">Ejecutar operación</button>
+        </div>
+
+        <div id="accounts">
+                <label for="selectAccount" class="col-lg-2 control-label">Cuenta que ejecutará la operación</label>
+                <select id="accountsSelect" name="accountsSelect"/>
+        </div>
+
+	</div>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+	<script>
+		/*
+        ** CONFIGURACION INICIAL
+        */
+
+        //Definicion del nodo / proveedor de servicios
+        if (typeof web3 !== 'undefined') {
+            web3 = new Web3(web3.currentProvider);
+        } else {
+            // set the provider you want from Web3.providers
+            //web3 = new Web3(new Web3.providers.HttpProvider("http://ethpocmtcxle.westeurope.cloudapp.azure.com:8545"));
+            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+            //web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.23.128:8545"));
+        }
+
+        /*COGEMOS TODAS LAS CUENTAS DE NUESTRO NODO
+        accountNum = web3.eth.accounts.length;
+        select = document.getElementById('accountsSelect');
+        for (i = 0; i < accountNum; i++) {
+            opt = document.createElement('option');
+            opt.value = i;
+            opt.innerHTML = web3.eth.accounts[i];
+            select.appendChild(opt);
+        }*/
+
+        //Definimos cuenta con la que vamos a trabajar
+        web3.eth.defaultAccount = web3.eth.accounts[0];
+        //web3.eth.defaultAccount.gas = '3';
+
+        var PoCEnergyContract = web3.eth.contract(abiArray);
+
+        //DEFINICION DE LA DIRECCION DEL SMART CONTRACT
+        var PoCEnergy = PoCEnergyContract.at('0xaf085c7782a9de4f13558725b797193f4bf23541');
+        console.log(PoCEnergy);
+
+
+        /*
+        ** FUNCIONES DE NUESTRO CLIENTE
+        */
+
+        //Cargamos los usuarios de la Blockchain
+        PoCEnergy.getUsers(function(error, result){
+            console.log("getUsers");
+            if(!error){
+                select = document.getElementById('accountsSelect');
+                for (i = 0; i < result.length; i++) {
+                    var direccionAccountBck = result[i].toString();
+                    PoCEnergy.getUser(direccionAccountBck, function(error2, result2){
+                        if(!error2){
+                            opt = document.createElement('option');
+                            opt.value = result2[0].toString();
+                            opt.innerHTML = result2[1].toString() + " - "  + result2[2].toString() + " - " + result2[0].toString();
+                            //opt.value = direccionAccountBck;
+                            //opt.innerHTML = result2[1].toString() + " - " + result2[0].toString();
+                            select.appendChild(opt);
+                        }else{
+                            console.error("getUsers.PoCEnergy.getUser Error: " + error2);
+                        }
+                    });              
+                }
+            }else{
+                console.error("getUsers.PoCEnergy.getUsers Error: " + error);
+            }
+        });
+
+        //Operaciones PRECIO
+        function setBCHPrize(){
+            console.log("setBCHPrize");
+            //Obtenemos la dirección del usuario que esta llamando a la Blockchain
+            select = document.getElementById("accountsSelect");
+            direccionAccountBck = select.options[select.selectedIndex].value;
+            console.log(direccionAccountBck);
+
+            //Obtenemos información sobre el usuario llamando a la Blockchain
+            PoCEnergy.getUser(direccionAccountBck, function(error2, result2){
+                if(!error2){
+                    //Comprobamos si es un productor
+                    if(result2[2].toString() == "producer"){
+                        console.log("setBCHPrize.PoCEnergy.getUser: OK");
+                        //Establecemos la cuenta de usuario como la que va a llamar a la Blockchain
+                        web3.eth.defaultAccount = result2[0];
+
+                        //Llamada a la Blockchain
+                        PoCEnergy.setPrize($("#prize").val(), function(error3, result3){
+                            if(!error3){
+                                console.log("setBCHPrize.PoCEnergy.setPrize result: " + result3);
+                            }else{
+                                console.error("setBCHPrize.PoCEnergy.setPrize Error: " + error3);
+                            }
+                        });
+                    }else{
+                        alert("No eres un productor de energía, no puedes establecer su precio");
+                    }
+                }else{
+                    console.error("setBCHPrize.PoCEnergy.getUser Error: " + error2);
+                }
+            });
+        }
+
+        //Operaciones PRODUCCION DE ENERGIA
+        function setBCHProducedEnergy(){
+            //Obtenemos la dirección del usuario que esta llamando a la Blockchain
+            console.log("setBCHProducedEnergy");
+            select = document.getElementById("accountsSelect");
+            direccionAccountBck = select.options[select.selectedIndex].value;
+            console.log(direccionAccountBck);
+
+            //Obtenemos información sobre el usuario llamando a la Blockchain
+            PoCEnergy.getUser(direccionAccountBck, function(error2, result2){
+                if(!error2){
+                    //Comprobamos si es un productor
+                    if(result2[2].toString() == "producer"){
+                        console.log("setBCHProducedEnergy.PoCEnergy.getUser: OK");
+                        //Establecemos la cuenta de usuario como la que va a llamar a la Blockchain
+                        web3.eth.defaultAccount = result2[0];
+
+                        var dateNumber = new Date($("#producedEnerDate").val()).getTime();
+                        //Llamada a la Blockchain
+                        PoCEnergy.setProducedEnergy($("#producedEnerQuantity").val(), dateNumber, function(error3, result3){
+                            if(!error3){
+                                //alert("result3" + result3);
+                                console.log("setBCHProducedEnergy.PoCEnergy.setProducedEnergy result: " + result3);
+                            }else{
+                                //alert("error3" + error3);
+                                console.error("setBCHProducedEnergy.PoCEnergy.setProducedEnergy Error: " + error3);
+                            }
+                        });
+                    }else{
+                        alert("No eres un productor de energía, no puedes producir energía");
+                    }
+                }else{
+                    console.error("setBCHProducedEnergy.PoCEnergy.getUser Error: " + error2);
+                }
+            }); 
+        }
+
+        //Operaciones COMPRA DE ENERGIA
+        function setBCHPurchasedEnergy(){
+            //Obtenemos la dirección del usuario que esta llamando a la Blockchain
+            console.log("setBCHPurchasedEnergy");
+            select = document.getElementById("accountsSelect");
+            direccionAccountBck = select.options[select.selectedIndex].value;
+            console.log(direccionAccountBck);
+            
+            //Obtenemos información sobre el usuario llamando a la Blockchain
+            PoCEnergy.getUser(direccionAccountBck, function(error2, result2){
+                if(!error2){
+                    //Comprobamos si es un distributor
+                    if(result2[2].toString() == "marketer"){
+                        console.log("setBCHPurchasedEnergy.PocEnergy.getUser: OK");
+                        //Establecemos la cuenta de usuario como la que va a llamar a la Blockchain
+                        web3.eth.defaultAccount = result2[0];
+
+                        var dateNumber = new Date($("#purchasedEnerDate").val()).getTime();
+                        //Llamada a la Blockchain
+                        PoCEnergy.setPurchasedEnergy($("#productorAccount").val(),$("#purchasedEnerQuantity").val(),
+                            dateNumber, function(error3, result3){
+                            if(!error3){
+                                console.log("setBCHPurchasedEnergy.PoCEnergy.setPurchasedEnergy result: " + result3);
+                            }else{
+                                console.error("setBCHPurchasedEnergy.PoCEnergy.setPurchasedEnergy Error: " + error3);
+                            }
+                        });
+                    }else{
+                        alert("No eres un distribuidir de energía, no puedes comprar energía");
+                    }
+                }else{
+                    console.error("setBCHPurchasedEnergy.PoCEnergy.getUser Error: " + error2);
+                }
+            }); 
+        }
+
+        //Operaciones CONSUMO DE ENERGIA
+        function setBCHConsumedEnergy(){
+            //Obtenemos la dirección del usuario que esta llamando a la Blockchain
+            console.log("setBCHConsumedEnergy");
+            select = document.getElementById("accountsSelect");
+            direccionAccountBck = select.options[select.selectedIndex].value;
+            console.log(direccionAccountBck);
+            
+            //Obtenemos información sobre el usuario llamando a la Blockchain
+            PoCEnergy.getUser(direccionAccountBck, function(error2, result2){
+                if(!error2){
+                    //Comprobamos si es un cliente
+                    if(result2[2].toString() == "client"){
+                        console.log("setBCHConsumedEnergy.PoCEnergy.getUser: OK");
+                        //Establecemos la cuenta de usuario como la que va a llamar a la Blockchain
+                        web3.eth.defaultAccount = result2[0];
+
+                        var dateNumber = new Date($("#consumedEnerDate").val()).getTime();
+                        //Llamada a la Blockchain
+                        PoCEnergy.setConsumedEnergy($("#distributorAccount").val(), $("#consumedEnerQuantity").val(),
+                        $("#consumedConcept").val(), dateNumber, function(error3, result3){
+                            if(!error3){
+                                console.log("setBCHConsumedEnergy.PoCEnergy.setConsumedEnergy result: " + result3);
+                            }else{
+                                console.error("setBCHConsumedEnergy.PoCEnergy.setConsumedEnergy Error: " + error3);
+                            }
+                        });
+                    }else{
+                        alert("No eres un cliente, por lo que no puedes consumir energía");
+                    }
+                }else{
+                    console.error("setBCHConsumedEnergy.PoCEnergy.getUser Error: " + error2);
+                }
+            }); 
+        }
+
+
+        //Boton click que llama a la correspondiente función
+        $("#button").click(function() {
+            //alert("Buton");
+            myselect = document.getElementById("operationsSelect");
+            operation = myselect.options[myselect.selectedIndex].value;
+            if (operation=="setPrize"){
+                setBCHPrize();
+            }else if (operation=="produceEnergy"){
+                setBCHProducedEnergy();
+            }else if (operation=="purchaseEnergy"){
+                setBCHPurchasedEnergy();
+            }else if (operation=="consumeEnergy"){
+                setBCHConsumedEnergy();
+            }
+            /*else if(operation=="addUser"){
+                alert("Añadir usuario");
+                myselect = document.getElementById("userProfiles");
+                profile = myselect.options[myselect.selectedIndex].value;
+                alert($("#userAddress").val() + " - " + $("#userName").val() + " - " + profile);
+                PoCEnergy.setUser($("#userAddress").val(), $("#userName").val(), profile);
+            }*/
+        });
+
+        //TODO: TRATAMIENTO DE LOS BLOQUES
+        /*var filter = web3.eth.filter('latest');
+        filter.watch(function(error, result){
+            if (error) {
+                alert("tratarBloques - error");			
+                console.log(error);
+                return;
+            }else{
+                alert("tratarBloques - bien");
+                var block = web3.eth.getBlock(result, true);
+                console.log('block #' + block.number);
+
+                console.dir(block.transactions);
+            }
+            //for (var index = 0; index < block.transactions.length; index++) {
+            //	var t = block.transactions[index];
+            //}
+        });
+
+        filter.watch(function(error, result){
+            if (error) {
+                alert("Errorrrrrr");
+                return;
+            }else{
+                console.log("Rrrrrresultado: " + result);
+                alert("Resultado: " + result);
+            }
+        });
+
+        var i = 1;
+        //while (i<108) {
+            i++;
+
+            var block = web3.eth.getBlock(i, true);
+
+            for (var index = 0; index < block.transactions.length; index++) {
+                var t = block.transactions[index];
+                alert(t.from);
+            }
+
+            web3.eth.getBlock(i, function(error, result){
+                if(!error && result!=null){
+                    if (result.transactions.length!=0){
+                        console.log("Bloque: " + i + " - transacciones: " + result.transactions.length);
+                        var t = result.transactions[0];
+                        alert(t);
+                        // Decode from
+                        alert(t.from);
+                    }
+                }
+                else{
+                    alert("error");
+                    console.error(error);
+                }
+            });
+        //}
+        */
+    </script>
+    <!--<script src="mainWeb3.js"></script>-->
+    <script src="main.js"></script>
+
+</body>
+
+</html>
