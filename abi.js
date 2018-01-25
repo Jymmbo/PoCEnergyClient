@@ -14,6 +14,32 @@ var abiArray = [
 		"type": "function"
 	},
 	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_marketer",
+				"type": "address"
+			},
+			{
+				"name": "_quantity",
+				"type": "uint256"
+			},
+			{
+				"name": "_concept",
+				"type": "string"
+			},
+			{
+				"name": "_date",
+				"type": "uint256"
+			}
+		],
+		"name": "setConsumedEnergy",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"constant": true,
 		"inputs": [
 			{
@@ -30,6 +56,28 @@ var abiArray = [
 		],
 		"payable": false,
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": false,
+		"inputs": [
+			{
+				"name": "_producer",
+				"type": "address"
+			},
+			{
+				"name": "_quantity",
+				"type": "uint256"
+			},
+			{
+				"name": "_date",
+				"type": "uint256"
+			}
+		],
+		"name": "setPurchasedEnergy",
+		"outputs": [],
+		"payable": false,
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -58,11 +106,15 @@ var abiArray = [
 		"outputs": [
 			{
 				"name": "",
-				"type": "address"
+				"type": "uint256"
 			},
 			{
 				"name": "",
-				"type": "address"
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
 			},
 			{
 				"name": "",
@@ -97,32 +149,6 @@ var abiArray = [
 		"type": "function"
 	},
 	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_producer",
-				"type": "address"
-			},
-			{
-				"name": "_quantity",
-				"type": "uint256"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			},
-			{
-				"name": "_date",
-				"type": "uint256"
-			}
-		],
-		"name": "setPurchasedEnergy",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"constant": true,
 		"inputs": [
 			{
@@ -134,11 +160,15 @@ var abiArray = [
 		"outputs": [
 			{
 				"name": "",
-				"type": "address"
+				"type": "uint256"
 			},
 			{
 				"name": "",
 				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "string"
 			}
 		],
 		"payable": false,
@@ -191,6 +221,10 @@ var abiArray = [
 		],
 		"name": "getUser",
 		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
 			{
 				"name": "",
 				"type": "string"
@@ -291,11 +325,15 @@ var abiArray = [
 		"outputs": [
 			{
 				"name": "",
-				"type": "address"
+				"type": "uint256"
 			},
 			{
 				"name": "",
-				"type": "address"
+				"type": "string"
+			},
+			{
+				"name": "",
+				"type": "string"
 			},
 			{
 				"name": "",
@@ -312,36 +350,6 @@ var abiArray = [
 		],
 		"payable": false,
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"constant": false,
-		"inputs": [
-			{
-				"name": "_distributor",
-				"type": "address"
-			},
-			{
-				"name": "_quantity",
-				"type": "uint256"
-			},
-			{
-				"name": "_value",
-				"type": "uint256"
-			},
-			{
-				"name": "_concept",
-				"type": "string"
-			},
-			{
-				"name": "_date",
-				"type": "uint256"
-			}
-		],
-		"name": "setConsumedEnergy",
-		"outputs": [],
-		"payable": false,
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -374,6 +382,25 @@ var abiArray = [
 	},
 	{
 		"constant": true,
+		"inputs": [
+			{
+				"name": "usr",
+				"type": "address"
+			}
+		],
+		"name": "getUserName",
+		"outputs": [
+			{
+				"name": "",
+				"type": "string"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
 		"inputs": [],
 		"name": "getConsumedEnergies",
 		"outputs": [
@@ -385,27 +412,6 @@ var abiArray = [
 		"payable": false,
 		"stateMutability": "view",
 		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"name": "how",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"name": "quantity",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"name": "date",
-				"type": "uint256"
-			}
-		],
-		"name": "eventProduceEnergy",
-		"type": "event"
 	}
 ];
+

@@ -86,7 +86,10 @@
                     <input id="distributorAccount" type="text">
 
                     <label for="consumedEnerDate" class="col-lg-2 control-label">Fecha</label>
-                    <input id="consumedEnerDate" type="datetime">
+                    <input id="consumedEnerDate" type="date">
+                    
+                    <label for="consumedEnerTime" class="col-lg-2 control-label">Hora</label>
+                    <input id="consumedEnerTime" type="time">
                     <!--
                         input id="consumedEnerDate" type="datetime-local">
                     -->
@@ -119,8 +122,8 @@
             web3 = new Web3(web3.currentProvider);
         } else {
             // set the provider you want from Web3.providers
-            //web3 = new Web3(new Web3.providers.HttpProvider("http://ethpocmtcxle.westeurope.cloudapp.azure.com:8545"));
-            web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+            web3 = new Web3(new Web3.providers.HttpProvider("http://ethpocmtcxle.westeurope.cloudapp.azure.com:8545"));
+            //web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
             //web3 = new Web3(new Web3.providers.HttpProvider("http://192.168.23.128:8545"));
         }
 
@@ -139,9 +142,10 @@
         //web3.eth.defaultAccount.gas = '3';
 
         var PoCEnergyContract = web3.eth.contract(abiArray);
+        //var PoCEnergyContract = web3.eth.contract(abiArray, {gas: 30});
 
         //DEFINICION DE LA DIRECCION DEL SMART CONTRACT
-        var PoCEnergy = PoCEnergyContract.at('0xaf085c7782a9de4f13558725b797193f4bf23541');
+        var PoCEnergy = PoCEnergyContract.at('0x438802471e003471c67bc80713c6e03be156b3f8');
         console.log(PoCEnergy);
 
 
@@ -215,7 +219,7 @@
             select = document.getElementById("accountsSelect");
             direccionAccountBck = select.options[select.selectedIndex].value;
             console.log(direccionAccountBck);
-
+ 
             //Obtenemos información sobre el usuario llamando a la Blockchain
             PoCEnergy.getUser(direccionAccountBck, function(error2, result2){
                 if(!error2){
@@ -225,9 +229,10 @@
                         //Establecemos la cuenta de usuario como la que va a llamar a la Blockchain
                         web3.eth.defaultAccount = result2[0];
 
-                        var dateNumber = new Date($("#producedEnerDate").val()).getTime();
+                        var dateNumber = new Date($("#producedEnerDate").val()).getTime();             
                         //Llamada a la Blockchain
                         PoCEnergy.setProducedEnergy($("#producedEnerQuantity").val(), dateNumber, function(error3, result3){
+                        //PoCEnergy.setProducedEnergy($("#producedEnerQuantity").val(), $("#producedEnerDate").val(), function(error3, result3){
                             if(!error3){
                                 //alert("result3" + result3);
                                 console.log("setBCHProducedEnergy.PoCEnergy.setProducedEnergy result: " + result3);
@@ -298,10 +303,12 @@
                         //Establecemos la cuenta de usuario como la que va a llamar a la Blockchain
                         web3.eth.defaultAccount = result2[0];
 
-                        var dateNumber = new Date($("#consumedEnerDate").val()).getTime();
+                        var time = $("#consumedEnerTime").val().split(":");
+                        var date = new Date($("#consumedEnerDate").val());              
+                        date.setTime(date.getTime() + (time[0]*60*60*1000) + (time[1]*60*1000));
                         //Llamada a la Blockchain
                         PoCEnergy.setConsumedEnergy($("#distributorAccount").val(), $("#consumedEnerQuantity").val(),
-                        $("#consumedConcept").val(), dateNumber, function(error3, result3){
+                        $("#consumedConcept").val(), date, function(error3, result3){
                             if(!error3){
                                 console.log("setBCHConsumedEnergy.PoCEnergy.setConsumedEnergy result: " + result3);
                             }else{
