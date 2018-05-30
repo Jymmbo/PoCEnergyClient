@@ -17,8 +17,8 @@ Acceder por medio de un navegador a la página de [Remix](http://remix.ethereum.
 
 Tras ello habrá que ejecutar una serie de pasos. Como soporte podrían servir las siguientes entradas del blog de Izertis:
 
- * 
- * 
+ * [Cómo arrancar y testear tu propia Blockchain con Ganache](https://transformaciondigital.izertis.com/blog/como-arrancar-y-testear-tu-propia-blockchain-con-ganache)
+ * [Cómo poner en marcha tu primer Smart Contract en 3 pasos](https://transformaciondigital.izertis.com/blog/como-poner-en-marcha-tu-primer-smart-contract-en-3-pasos) 
 
 Ejecutar los siguientes pasos:
 
@@ -42,7 +42,7 @@ Para que la PoC funcione en el correspondiente entornom habrá que cambiar en lo
  * Dirección del Smart Contract
 
 ```
-var PoCEnergy = PoCEnergyContract.at(
+var PoCEnergy = PoCEnergyContract.at(**"direccion a cambiar"**)
 
 ```
 
