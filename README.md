@@ -46,5 +46,6 @@ var PoCEnergy = PoCEnergyContract.at(**"direccion a cambiar"**)
 
 ```
 
+Al ejecutar las operaciones puede fallar debido a la cantidad de gas que se utiliza. Habrá que depurar ejecutando esas operacioens vía Remix y viendo la cantidad de Gas utilizado para la correspondiente transacción en Ganache.
 
 

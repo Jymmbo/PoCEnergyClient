@@ -226,9 +226,10 @@
                         web3.eth.defaultAccount = result2[0];
 
                         //gas2 = new BigNumber(105695);
-                        var dateNumber = new Date($("#producedEnerDate").val()).getTime();             
+                        var dateNumber = new Date($("#producedEnerDate").val()).getTime();
+                        //alert(dateNumber);             
                         //Llamada a la Blockchain
-                        PoCEnergy.setProducedEnergy($("#producedEnerQuantity").val(), dateNumber, {gas: 105695}, function(error3, result3){
+                        PoCEnergy.setProducedEnergy($("#producedEnerQuantity").val(), dateNumber, {gas: 90823}, function(error3, result3){
                         //PoCEnergy.setProducedEnergy($("#producedEnerQuantity").val(), $("#producedEnerDate").val(), function(error3, result3){
                             if(!error3){
                                 //alert("result3" + result3);
