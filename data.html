@@ -109,13 +109,13 @@
             web3 = new Web3(web3.currentProvider);
         } else {
             // set the provider you want from Web3.providers
-            web3 = new Web3(new Web3.providers.HttpProvider("http://ethpocmtcxle.westeurope.cloudapp.azure.com:8545"));
+            web3 = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:7545"));
         }
         web3.eth.defaultAccount = web3.eth.accounts[0];
 
         var PoCEnergyContract = web3.eth.contract(abiArray);
 
-        var PoCEnergy = PoCEnergyContract.at('0x438802471e003471c67bc80713c6e03be156b3f8');
+        var PoCEnergy = PoCEnergyContract.at('0xe725fa3dca9632aa6aa74625dcf4c4dd07e0e2d3');
         console.log(PoCEnergy);
 		
 		/*
@@ -171,7 +171,8 @@
                             if(!error2){
                                 //$('#tableProducedEnergy').append('<tr><td>' + new Date(1516896000000).toLocaleFormat('%d-%b-%Y - %H:%m') +
                                 //$('#tableProducedEnergy').append('<tr><td>' + new Date(result2[0].toString()) +
-								$('#tableProducedEnergy').append('<tr><td>' + new Date(parseInt(result2[0].toString())).toLocaleFormat('%d-%b-%Y') +
+                                //$('#tableProducedEnergy').append('<tr><td>' + new Date(parseInt(result2[0].toString())).toLocaleFormat('%d-%b-%Y') +
+                                $('#tableProducedEnergy').append('<tr><td>' + result2[0].toString() +
                                 	'</td><td>' + result2[2].toString() +  
 									'</td><td>' + result2[1].toString() + '</td></tr>');
                             } else{
@@ -180,7 +181,7 @@
                         });              
                     }
                 }else{
-                    console.error("getBCHProducedEnergy.PoCEnergy.getProducedEnergies Error: " + error2);
+                    console.error("getBCHProducedEnergy.PoCEnergy.getProducedEnergies Error: " + error);
                 }
             });
 		};
